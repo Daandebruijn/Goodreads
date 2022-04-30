@@ -1,0 +1,28 @@
+#Now the data is explored, we can start merging the data files to create
+#the right estimation samples. 
+#We start by merging the ratings and reviews dataset. 
+unique_new_reviews_id_ratings <- unique(ratings$new_review_id)
+# 8.363.765 unique reviews in ratings
+unique_new_reviews_id_reviews <- unique(reviews$new_review_id)
+# 1.247.032 unique reviews in reviews 
+
+ratings1 <- ratings %>% full_join(reviews, by="new_review_id")
+#Remove variables that have no use 
+names(ratings1)
+ratings1 <- ratings1 %>% select(book_id.x, new_review_id, ratings.x, time.x, text) 
+#Now ratings1 has 5 variables again. 
+#The column names have to be transformed back 
+names(ratings1)[1] <- "book_id"
+names(ratings1)[3] <- "ratings"
+names(ratings1)[4] <- "time"
+#check for missing values rating scores 
+sum(is.na(ratings1$ratings))
+#320.353 missings 
+ratings1 <- ratings1 %>% drop_na(ratings)
+mean(ratings1$ratings)
+mean(ratings$ratings)
+#meaning that all observations in the reviews are taken from the ratings dataset. 
+#So, only use the ratings dataset. 
+fwrite(ratings1, "xratings_merged_reviews.csv")
+rm(ratings)
+rm(reviews)
