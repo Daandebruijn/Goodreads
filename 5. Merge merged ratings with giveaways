@@ -1,0 +1,32 @@
+#Now we can merge the giveaway dataset with the ratings dataset 
+names(giveawaysdata)
+giveawaysdata <- giveawaysdata %>% select(giveaway_id, book_id, book_title, release_date, copy_n, request_n, giveaway_start_date, giveaway_end_date, year, duration)
+ratings1$time <- as.Date(ratings1$time)
+giveawaysdata$giveaway_end_date <- as.Date(giveawaysdata$giveaway_end_date)
+
+giveawaysdata1 <- ratings1 %>% inner_join(giveawaysdata, by="book_id")
+uniquebookdsids_giveawaysdata1 <- unique(giveawaysdata1$book_id)
+# 18,559 unique book ids that have participated in a giveaway (some information is lost compared to 28,500)
+rm(giveawaysdata)
+rm(ratings1)
+
+#check for NA important variables 
+sum(is.na(giveawaysdata1$time))
+sum(is.na(giveawaysdata1$giveaway_end_date))
+#No missings 
+
+#Create dummy variable to indicate if rating is given before or after giveaway 
+giveawaysdata1$ratingaftergiveaway <- ifelse(giveawaysdata1$time > giveawaysdata1$giveaway_end_date, 1, 0)
+
+#Add another month variable that specifies the month the rating is created. 
+giveawaysdata1$month <- format(giveawaysdata1$time, format="%m-%Y")
+
+#check how many ratings are created before and after giveaways 
+table(giveawaysdata1$ratingaftergiveaway)
+# 0 = 1,854,144
+# 1 = 6,509,621 
+
+#Save file (merged giveaways with ratings (ratings already merged))
+fwrite(giveawaysdata1, "xgiveaways_ratings1.csv")
+
+#In fact, the dataset is now ready for analysis, but we also need moderation variables femaleauthor and authoraverage rating. 
