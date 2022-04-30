@@ -1,0 +1,47 @@
+
+library(haven)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(scales)
+library(data.table)
+library(Rmisc)
+
+bookdata <- read_csv("book_df_cleanPublisher (2).csv")
+bookdata <- bookdata %>% select(id, book_publication_date, title, average_rating, ratings_count, female_author)
+fwrite(bookdata, "xbookdata.csv")
+
+authordata <- read_csv("author_df (2).csv")
+authordata <- authordata %>% select(book_id, author_id, author_name, author_average_rating)
+fwrite(authordata, "xauthordata.csv")
+
+giveaways <- read_csv("giveaways_thesis (2).csv")
+giveaways <- giveaways %>% select(giveaway_id, book_id, book_title, release_date, copy_n, request_n, giveaway_start_date, giveaway_end_date, year)
+giveaways$giveaway_end_date <- as.Date(giveaways$giveaway_end_date)
+giveaways$giveaway_start_date <- as.Date(giveaways$giveaway_start_date)
+#Checking the average duration of a giveaway 
+giveaways$duration <- giveaways$giveaway_end_date - giveaways$giveaway_start_date
+giveaways$duration <- str_replace(giveaways$duration, " days", "")
+giveaways$duration <- as.numeric(giveaways$duration)
+giveaways <- giveaways %>% filter(giveaways$duration > 0)
+fwrite(giveaways, "xgiveawaysdata.csv")
+
+ratings <- read_csv("reviews_thesis_notext.csv")
+ratings <- ratings %>% select(book_id, review_id, new_review_id, ratings, time)
+ratings <- ratings %>% filter(book_id %in% giveaways$book_id)
+uniquebookids <- unique(ratings$book_id)
+ratings$time <- str_replace(ratings$time, "," , "") 
+ratings$time <- str_replace_all(ratings$time, " ", "-")
+ratings$time <- as.Date(ratings$time, "%b-%d-%Y")
+ratings <- ratings %>% filter(time >= "2007-01-01")
+sum(is.na(ratings$time))
+fwrite(ratings, "xratings.csv")
+
+reviews <- read_csv("reviews_thesis_text.csv")
+reviews <- reviews %>% filter(reviews$text != "")
+reviews <- reviews %>% filter(book_id %in% giveaways$book_id)
+reviews$time <- as.Date(reviews$time)
+sum(is.na(reviews$time))
+reviews <- reviews %>% filter(time >= "2007-01-01")
+fwrite(reviews, "xreviews.csv")
