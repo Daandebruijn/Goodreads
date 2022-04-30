@@ -1,0 +1,17 @@
+#So, we add these to the dataset. 
+#The bookdata has a variable "id" so this is changed to 'book_id". 
+names(bookdata)[1] <- "book_id"
+#Add femaleauthor to the giveawaysdata1 
+femaleauthor <- bookdata %>% select(book_id, female_author)
+giveawaysdata1 <- giveawaysdata1 %>% inner_join(femaleauthor, by="book_id")
+
+#Add authoraveragerating to the giveawaysdata1 
+averageratingauthor <- authordata %>% select(book_id, author_average_rating)
+giveawaysdata1 <- giveawaysdata1 %>% inner_join(averageratingauthor, by="book_id")
+table(giveawaysdata1$ratingaftergiveaway)
+# 0 = 2,162,924 
+# 1 = 7,641,135 
+uniquebookdsids_giveawaysdata2 <- unique(giveawaysdata1$book_id)
+#There are still 18.559 unique books in the dataset. 
+
+fwrite(giveawaysdata1, "xestimationsamplegiveaways")
