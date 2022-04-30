@@ -1,0 +1,19 @@
+library(readr)
+authordata <- read_csv("xauthordata.csv")
+View(authordata)
+
+library(readr)
+bookdata <- read_csv("xbookdata.csv")
+View(bookdata)
+
+library(readr)
+giveawaysdata <- read_csv("xgiveawaysdata.csv")
+View(giveawaysdata)
+
+library(readr)
+ratings <- read_csv("xratings.csv")
+View(ratings)
+
+library(readr)
+reviews <- read_csv("xreviews.csv")
+View(reviews)
