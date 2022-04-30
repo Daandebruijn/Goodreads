@@ -1,0 +1,18 @@
+#Now the final set is done, we can perform the before-after analysis on the 
+#treat ment group. (pre-post testing)
+model1 <- feols(ratings ~ ratingaftergiveaway | book_id + month, data=giveawaysdata1)
+summary(model1)
+etable(model1, cluster = ~book_id)
+
+gravity_subfe = list()
+all_FEs = c("book_id", "month")
+for(i in 0:2){
+  gravity_subfe[[i+1]] = feols(ratings ~ ratingaftergiveaway, giveawaysdata1, fixef = all_FEs[0:i])
+}
+etable(gravity_subfe, cluster = ~book_id)
+
+model2 <- feols(ratings ~ ratingaftergiveaway*female_author | book_id + month, data=giveawaysdata1)
+summary(model2)
+
+model3 <- feols(ratings ~ ratingaftergiveaway*author_average_rating | book_id + month, data=giveawaysdata1 )
+summary(model3)
