@@ -1,0 +1,131 @@
+#Data exploration 
+library(haven)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+
+#Author and Book data 
+authordata <- authordata %>% filter(book_id %in% bookdata$id)
+uniqueauthor_ids <- unique(authordata$author_id)
+# 132,918 unique authors in author data 
+uniquebook_ids <- unique(authordata$book_id)
+# 201,573 unique book ids in author data
+uniquebook_ids1 <- unique(bookdata$id)
+# 201,575 unique book ids in book data 
+sum(is.na(authordata$author_average_rating))
+#0
+sum(is.na(bookdata$average_rating))
+#0 
+mean(authordata$author_average_rating)
+# 3.98 
+min(authordata$author_average_rating)
+# 0 
+max(authordata$author_average_rating)
+# 5
+sd(authordata$author_average_rating)
+# 0.39 
+mean(bookdata$average_rating)
+# 3.96
+min(bookdata$average_rating)
+# 0 
+max(bookdata$average_rating)
+# 5
+sd(bookdata$average_rating)
+# 0.55
+
+#Giveaways Data 
+#How many unique books participated in a giveaway? 
+uniquebook_ids_giveaways <- unique(giveawaysdata$book_id)
+# 28,500 
+min(giveawaysdata$giveaway_start_date)
+# 2018-01-01
+max(giveawaysdata$giveaway_start_date)
+# 2020-10-30
+min(giveawaysdata$giveaway_end_date)
+# 2018-01-08 
+max(giveawaysdata$giveaway_end_date)
+# 2020-11-06
+#Number of months is 12+12+10 = 34 months 
+#Number of unique giveaways is 28.495 
+28495/34
+# average per month is 838.09 
+ggplot(giveawaysdata, aes(x=lubridate::floor_date(giveaway_end_date, "month"))) +
+  geom_bar()+ 
+  xlab("per Month") + 
+  ylab("Number of Giveaways") + 
+  geom_hline(yintercept = 838,09,color="green")
+mean(giveawaysdata$copy_n)
+# 43.98
+min(giveawaysdata$copy_n)
+# 1
+max(giveawaysdata$copy_n)
+# 2000 
+sd(giveawaysdata$copy_n)
+# 42.21
+mean(giveawaysdata$request_n)
+# 1603.31
+min(giveawaysdata$request_n)
+# 6
+max(giveawaysdata$request_n)
+# 34.655
+sd(giveawaysdata$request_n)
+# 1644.05
+mean(giveawaysdata$duration)
+# 20.72 
+min(giveawaysdata$duration)
+# 7 
+max(giveawaysdata$duration)
+# 90 
+sd(giveawaysdata$duration)
+#10.50 
+
+#Ratings data 
+sum(is.na(ratings))
+# 0 missings 
+uniquebook_ids_ratings <- unique(ratings$book_id)
+#18.559 unique books in the ratings data set 
+unique_new_reviews_id <- unique(ratings$new_review_id)
+#8.363.765 unique ratings 
+min(ratings$time)
+#2007-01-01 
+max(ratings$time)
+#2021-04-30 
+#14 years * 12 months + 4 months = 172 months 
+8363765 / 172 
+#48.627 ratings created per month 
+ggplot(ratings, aes(x=lubridate::floor_date(time, "month"))) +
+  geom_bar()+ 
+  xlab("per month") + 
+  ylab("Number of Ratings") +
+geom_hline(yintercept = 48627,color="green")
+mean(ratings$ratings)
+# 3.44 
+min(ratings$ratings)
+# 1 
+max(ratings$ratings)
+# 5 
+sd(ratings$ratings)
+# 1.21 
+
+#Reviews data 
+sum(is.na(reviews))
+#0 
+min(reviews$time)
+#2007-01-04 
+max(reviews$time)
+#2021-04-29 
+12*14+4
+#172 months 
+uniquebook_ids_reviews <- unique(reviews$book_id)
+#11.626 
+unique_new_reviews_id <- unique(reviews$new_review_id)
+#1.247.032 unique reviews 
+1247032 / 172
+#7250 reviews per month 
+
+ggplot(reviews, aes(x=lubridate::floor_date(time, "month"))) +
+  geom_bar()+ 
+  xlab("per Month") + 
+  ylab("Number of Reviews") +
+  geom_hline(yintercept = 7250,color="green")
