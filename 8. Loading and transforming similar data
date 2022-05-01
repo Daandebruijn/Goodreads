@@ -1,1 +1,14 @@
 
+library(haven)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(scales)
+library(data.table)
+library(Rmisc)
+library(R.utils)
+
+dataset <- fread("similarreviews.gz")
+similar_map <- read_csv("similar_map_thesis (2).csv")
+similar_meta <- read_csv("similar_meta_thesis (2).csv")
