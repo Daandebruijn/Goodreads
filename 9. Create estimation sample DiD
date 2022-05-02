@@ -1,0 +1,94 @@
+#merge similar file with similar_ratings file 
+similar_ratings <- similar %>% inner_join(similar_ratings, by="similar_book_id")
+names(similar_ratings)
+similar_ratings <- similar_ratings %>% select(focal_book_id.x, similar_book_id, title.x, reviews, rating, 'average rating', publication_date, treated, new_review_id, ratings, time)
+
+#how many unique similar / focal books? 
+df_uniq1 <- unique(similar_ratings$similar_book_id)
+#8960 unique similar books 
+df_uniq2 <- unique(similar_ratings$focal_book_id.x)
+#8960 unique focal books 
+
+fwrite(similar_ratings, "similar_ratings.csv")
+
+#Now, we can focus on the books that did participate in a giveaway, starting with the bookdata. 
+View(xbookdata)
+
+#add variable with treated = 1 
+xbookdata$treated <- "1"
+names(similar_ratings)
+names(xbookdata)
+names(xbookdata)[1] <- "focal_book_id"
+names(similar_ratings)[1] <- "focal_book_id"
+xbookdata <- xbookdata %>% filter(focal_book_id %in% similar_ratings$focal_book_id)
+
+#load the ratings dataset 
+View(xratings)
+names(xratings)
+xratings <- xratings %>% select(book_id, new_review_id, ratings, time)
+names(xratings)[1] <- "focal_book_id"
+xratings<- xratings %>% filter(focal_book_id %in% xbookdata$focal_book_id)
+
+#now, join the ratings dataset to the book data set 
+book_ratings <- xbookdata %>% inner_join(xratings, by="focal_book_id")
+
+#we want to link focal books to similar books, so create new dataset 
+similar_append <- similar %>% select(focal_book_id, similar_book_id)
+rm(similar)
+
+#Now, merge similar append with book data 
+names(book_ratings)
+names(similar_append)
+book_complete <- similar_append %>% inner_join(book_ratings, by="focal_book_id")
+
+#check names and bind the datasets together. 
+names(book_complete)
+names(similar_ratings)
+book_complete <- book_complete %>% select(focal_book_id, similar_book_id, book_publication_date, average_rating, ratings_count, treated, new_review_id, ratings, time)
+similar_ratings <- similar_ratings %>% select(focal_book_id, similar_book_id, publication_date, `average rating`, rating, treated, new_review_id, ratings, time)
+names(similar_ratings)[3] <- "book_publication_date"
+names(similar_ratings)[4] <- "average_rating"
+names(similar_ratings)[5] <- "ratings_count"
+book_similar_rating <- rbind(book_complete,similar_ratings)
+
+fwrite(book_similar_rating, "book_similar_rating.csv")
+
+#the last thing to add, is the giveaways dataset. 
+View(xgiveawaysdata)
+giveaways <- xgiveawaysdata %>% filter(book_id %in% book_similar_rating$focal_book_id)
+names(giveaways)[2] <- "focal_book_id"
+book_similar_rating_giveaway <- book_similar_rating %>% inner_join(giveaways, by="focal_book_id")
+
+#Now, one last variable is added to signal if rating is created before or after the giveaway 
+book_similar_rating_giveaway$giveaway_end_date <- as.Date(book_similar_rating_giveaway$giveaway_end_date)
+book_similar_rating_giveaway$time <- as.Date(book_similar_rating_giveaway$time)
+book_similar_rating_giveaway$ratingaftergiveaway <- ifelse(book_similar_rating_giveaway$time > book_similar_rating_giveaway$giveaway_end_date, 1,0)
+table(book_similar_rating_giveaway$ratingaftergiveaway)
+# 3.057.798 ratings are created before giveaway 
+# 6.200.717 ratings are created after giveaway 
+
+#save the complete data file
+fwrite(book_similar_rating_giveaway, "DiDestimationsample.csv")
+
+#Descriptive statistics!
+treatmentgroup <- book_similar_rating_giveaway %>% filter(treated == "1")
+controlgroup <- book_similar_rating_giveaway %>% filter(treated == "0")
+
+mean(treatmentgroup$ratings)
+# 3.52
+min(treatmentgroup$ratings)
+#1
+max(treatmentgroup$ratings)
+#5
+sd(treatmentgroup$ratings)
+#1.17
+
+mean(controlgroup$ratings)
+#3.43
+min(controlgroup$ratings)
+#1
+max(controlgroup$ratings)
+#5
+sd(controlgroup$ratings)
+# 1.23 
+
