@@ -67,6 +67,19 @@ table(book_similar_rating_giveaway$ratingaftergiveaway)
 # 3.057.798 ratings are created before giveaway 
 # 6.200.717 ratings are created after giveaway 
 
+#Do not forget to add the two moderation variables from the book and author dataset! 
+
+#Add femaleauthor to the booksimilarratinggiveaway dataset  
+femaleauthor <- xbookdata %>% select(focal_book_id, female_author)
+book_similar_rating_giveaway <- book_similar_rating_giveaway %>% inner_join(femaleauthor, by="focal_book_id")
+
+#Add authoraveragerating to the giveawaysdata1 
+averageratingauthor <- xauthordata %>% select(book_id, author_average_rating)
+names(averageratingauthor)[1] <- "focal_book_id"
+book_similar_rating_giveaway <- book_similar_rating_giveaway %>% inner_join(averageratingauthor, by="focal_book_id")
+
+
+
 #save the complete data file
 fwrite(book_similar_rating_giveaway, "DiDestimationsample.csv")
 
@@ -81,14 +94,13 @@ min(treatmentgroup$ratings)
 max(treatmentgroup$ratings)
 #5
 sd(treatmentgroup$ratings)
-#1.17
+#1.16
 
 mean(controlgroup$ratings)
-#3.43
+#3.44
 min(controlgroup$ratings)
 #1
 max(controlgroup$ratings)
 #5
 sd(controlgroup$ratings)
 # 1.23 
-
