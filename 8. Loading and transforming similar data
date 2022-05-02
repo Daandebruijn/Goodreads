@@ -12,3 +12,46 @@ library(R.utils)
 dataset <- fread("similarreviews.gz")
 similar_map <- read_csv("similar_map_thesis (2).csv")
 similar_meta <- read_csv("similar_meta_thesis (2).csv")
+
+#subset 
+similar_map <- similar_map %>% select(focal_book_id, similar_book_id)
+similar_meta <- similar_meta %>% select(similar_book_id, title, reviews, rating, `average rating`, publication_date)
+
+#delete duplicate cases 
+similar_map <- similar_map[!duplicated(similar_map$focal_book_id), ] 
+similar_meta <- similar_meta %>% filter(similar_book_id %in% similar_map$similar_book_id)
+similar_meta <- similar_meta %>% distinct()
+
+#join map and meta
+similar <- similar_map %>% inner_join(similar_meta, by="similar_book_id")
+similar <- similar %>% distinct()
+rm(similar_map)
+rm(similar_meta)
+
+#indicate that these books have not been treated 
+similar$treated <- "0"
+
+#Now, we can add the similar ratings dataset. But first, check, clean and transform. 
+names(dataset)
+similar_ratings <- dataset %>% select(similar_book_id, new_review_id, ratings, time, focal_book_id, title)
+similar_ratings <- similar_ratings %>% filter(similar_book_id %in% similar$similar_book_id)
+
+#Transform the time variable 
+similar_ratings$time <- str_replace(similar_ratings$time, "," , "") 
+similar_ratings$time <- str_replace_all(similar_ratings$time, " ", "-")
+similar_ratings$time <- as.Date(similar_ratings$time, "%b-%d-%Y")
+similar_ratings$time <- as.Date(similar_ratings$time)
+
+sum(is.na(similar_ratings$time))
+# 2.017.717 missings 
+#drop missings 
+similar_ratings <- similar_ratings %>% drop_na(time)
+#6.742.777 remain 
+
+#remove the time values before 2007 
+similar_ratings <- similar_ratings %>% filter(time >= "2007-01-01")
+# 6.741.552 values remain 
+min(similar_ratings$time)
+#2007-01-01
+max(similar_ratings$time)
+#2021-08-29 
