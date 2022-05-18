@@ -1,0 +1,287 @@
+#create graph for Giveaways and Similar book ratings over time
+
+#factor dummy variables 
+did$treated <- as.factor(did$treated)
+
+#create variable days since giveaway 
+did$giveaway_end_date <- as.Date(did$giveaway_end_date)
+did$days_since_giveaway <- did$time - did$giveaway_end_date
+did$days_since_giveaway <- str_replace(did$days_since_giveaway, " days", "")
+did$days_since_giveaway <- as.numeric(did$days_since_giveaway)
+
+
+did_days <- did %>% filter(days_since_giveaway >= -360 & days_since_giveaway <= 360)
+max(did_days$days_since_giveaway)
+
+names(did_days)
+did_days$days_since_gw_bin <- cut_interval(did_days$days_since_giveaway,length=30)
+did_days$treated <- ifelse(did_days$treated == "0", "No", "Yes")
+
+graph_data_plot <- did_days %>% group_by(treated, days_since_gw_bin) %>% summarise(mean = mean(ratings))
+
+summary(graph_data_plot$days_since_gw_bin)
+minus12 <- graph_data_plot %>% filter(days_since_gw_bin == "[-360,-330]")
+mean(minus12$ratings)
+
+minus11 <- graph_data_plot %>% filter(days_since_gw_bin == "(-330,-300]")
+mean(minus11$ratings)
+
+minus10 <- graph_data_plot %>% filter(days_since_gw_bin == "(-300,-270]")
+mean(minus10$ratings)
+
+minus9 <- graph_data_plot %>% filter(days_since_gw_bin == "(-270,-240]")
+mean(minus9$ratings)
+
+minus8 <- graph_data_plot %>% filter(days_since_gw_bin == "(-240,-210]")
+mean(minus8$ratings)
+
+minus7 <- graph_data_plot %>% filter(days_since_gw_bin == "(-210,-180]")
+mean(minus7$ratings)
+
+minus6 <- graph_data_plot %>% filter(days_since_gw_bin == "(-180,-150]")
+mean(minus6$ratings)
+
+minus5 <- graph_data_plot %>% filter(days_since_gw_bin == "(-150,-120]")
+mean(minus5$ratings)
+
+minus4 <- graph_data_plot %>% filter(days_since_gw_bin == "(-120,-90]")
+mean(minus4$ratings)
+
+minus3 <- graph_data_plot %>% filter(days_since_gw_bin == "(-90,-60]")
+mean(minus3$ratings)
+
+minus2 <- graph_data_plot %>% filter(days_since_gw_bin == "(-60,-30]")
+mean(minus2$ratings)
+
+minus1 <- graph_data_plot %>% filter(days_since_gw_bin == "(-30,0]")
+mean(minus1$ratings)
+
+plus1 <- graph_data_plot %>% filter(days_since_gw_bin == "(0,30]")
+mean(plus1$ratings)
+
+plus2 <- graph_data_plot %>% filter(days_since_gw_bin == "(30,60]")
+mean(plus2$ratings)
+
+plus3 <- graph_data_plot %>% filter(days_since_gw_bin == "(60,90]")
+mean(plus3$ratings)
+
+plus4 <- graph_data_plot %>% filter(days_since_gw_bin == "(90,120]")
+mean(plus4$ratings)
+
+plus5 <- graph_data_plot %>% filter(days_since_gw_bin == "(120,150]")
+mean(plus5$ratings)
+
+
+plus6 <- graph_data_plot %>% filter(days_since_gw_bin == "(150,180]")
+mean(plus6$ratings)
+
+plus7 <- graph_data_plot %>% filter(days_since_gw_bin == "(180,210]")
+mean(plus7$ratings)
+
+plus8 <- graph_data_plot %>% filter(days_since_gw_bin == "(210,240]")
+mean(plus8$ratings)
+
+plus9 <- graph_data_plot %>% filter(days_since_gw_bin == "(240,270]")
+mean(plus9$ratings)
+
+plus10 <- graph_data_plot %>% filter(days_since_gw_bin == "(270,300]")
+mean(plus10$ratings)
+
+plus11 <- graph_data_plot %>% filter(days_since_gw_bin == "(300,330]")
+mean(plus11$ratings)
+
+plus12 <- graph_data_plot %>% filter(days_since_gw_bin == "(330,360]")
+mean(plus12$ratings)
+
+
+#Now, do the same, but for treated and non treated. 
+#create variable days since giveaway 
+did_treat$giveaway_end_date <- as.Date(did_treat$giveaway_end_date)
+did_treat$time <- as.Date(did_treat$time)
+did_treat$days_since_giveaway <- did_treat$time - did_treat$giveaway_end_date
+did_treat$days_since_giveaway <- str_replace(did_treat$days_since_giveaway, " days", "")
+did_treat$days_since_giveaway <- as.numeric(did_treat$days_since_giveaway)
+
+names(did_treat)
+did_treat <- did_treat %>% filter(days_since_giveaway >= -360 & days_since_giveaway <= 360)
+did_treat$days_since_gw_bin <- cut_interval(did_treat$days_since_giveaway,length=30)
+
+
+summary(did_treat$days_since_gw_bin)
+
+treatedminus12 <- did_treat %>% filter(days_since_gw_bin == "[-360,-330]")
+mean(treatedminus12$ratings)
+
+treatedminus11 <- did_treat %>% filter(days_since_gw_bin == "(-330,-300]")
+mean(treatedminus11$ratings)
+
+treatedminus10 <- did_treat %>% filter(days_since_gw_bin == "(-300,-270]")
+mean(treatedminus10$ratings)
+
+treatedminus9 <- did_treat %>% filter(days_since_gw_bin == "(-270,-240]")
+mean(treatedminus9$ratings)
+
+treatedminus8 <- did_treat %>% filter(days_since_gw_bin == "(-240,-210]")
+mean(treatedminus8$ratings)
+
+
+treatedminus7 <- did_treat %>% filter(days_since_gw_bin == "(-210,-180]")
+mean(treatedminus7$ratings)
+
+
+treatedminus6 <- did_treat %>% filter(days_since_gw_bin == "(-180,-150]")
+mean(treatedminus6$ratings)
+
+treatedminus5 <- did_treat %>% filter(days_since_gw_bin == "(-150,-120]")
+mean(treatedminus5$ratings)
+
+
+treatedminus4 <- did_treat %>% filter(days_since_gw_bin == "(-120,-90]")
+mean(treatedminus4$ratings)
+
+treatedminus3 <- did_treat %>% filter(days_since_gw_bin == "(-90,-60]")
+mean(treatedminus3$ratings)
+
+
+
+treatedminus2 <- did_treat %>% filter(days_since_gw_bin == "(-60,-30]")
+mean(treatedminus2$ratings)
+
+treatedminus1 <- did_treat %>% filter(days_since_gw_bin == "(-30,0]")
+mean(treatedminus1$ratings)
+
+treatedplus1 <- did_treat %>% filter(days_since_gw_bin == "(0,30]")
+mean(treatedplus1$ratings)
+
+treatedplus2 <- did_treat %>% filter(days_since_gw_bin == "(30,60]")
+mean(treatedplus2$ratings)
+
+treatedplus3 <- did_treat %>% filter(days_since_gw_bin == "(60,90]")
+mean(treatedplus3$ratings)
+
+
+treatedplus4 <- did_treat %>% filter(days_since_gw_bin == "(90,120]")
+mean(treatedplus4$ratings)
+
+treatedplus5 <- did_treat %>% filter(days_since_gw_bin == "(120,150]")
+mean(treatedplus5$ratings)
+
+treatedplus6 <- did_treat %>% filter(days_since_gw_bin == "(150,180]")
+mean(treatedplus6$ratings)
+
+
+treatedplus7 <- did_treat %>% filter(days_since_gw_bin == "(180,210]")
+mean(treatedplus7$ratings)
+
+treatedplus8 <- did_treat %>% filter(days_since_gw_bin == "(210,240]")
+mean(treatedplus8$ratings)
+
+treatedplus9 <- did_treat %>% filter(days_since_gw_bin == "(240,270]")
+mean(treatedplus9$ratings)
+
+treatedplus10 <- did_treat %>% filter(days_since_gw_bin == "(270,300]")
+mean(treatedplus10$ratings)
+
+treatedplus11 <- did_treat %>% filter(days_since_gw_bin == "(300,330]")
+mean(treatedplus11$ratings)
+
+treatedplus12 <- did_treat %>% filter(days_since_gw_bin == "(330,360]")
+mean(treatedplus12$ratings)
+
+
+#Now do the same for non treated 
+#create variable days since giveaway 
+did_non$giveaway_end_date <- as.Date(did_non$giveaway_end_date)
+did_non$time <- as.Date(did_non$time)
+did_non$days_since_giveaway <- did_non$time - did_non$giveaway_end_date
+did_non$days_since_giveaway <- str_replace(did_non$days_since_giveaway, " days", "")
+did_non$days_since_giveaway <- as.numeric(did_non$days_since_giveaway)
+
+names(did_non)
+did_non <- did_non %>% filter(days_since_giveaway >= -360 & days_since_giveaway <= 360)
+did_non$days_since_gw_bin <- cut_interval(did_non$days_since_giveaway,length=30)
+
+summary(did_non$days_since_gw_bin)
+
+nontreatedminus12 <- did_non %>% filter(days_since_gw_bin == "[-360,-330]")
+mean(nontreatedminus12$ratings)
+
+nontreatedminus11 <- did_non %>% filter(days_since_gw_bin == "(-330,-300]")
+mean(nontreatedminus11$ratings)
+
+nontreatedminus10 <- did_non %>% filter(days_since_gw_bin == "(-300,-270]")
+mean(nontreatedminus10$ratings)
+
+nontreatedminus9 <- did_non %>% filter(days_since_gw_bin == "(-270,-240]")
+mean(nontreatedminus9$ratings)
+
+
+nontreatedminus8 <- did_non %>% filter(days_since_gw_bin == "(-240,-210]")
+mean(nontreatedminus8$ratings)
+
+nontreatedminus7 <- did_non %>% filter(days_since_gw_bin == "(-210,-180]")
+mean(nontreatedminus7$ratings)
+
+
+nontreatedminus6 <- did_non %>% filter(days_since_gw_bin == "(-180,-150]")
+mean(nontreatedminus6$ratings)
+
+nontreatedminus5 <- did_non %>% filter(days_since_gw_bin == "(-150,-120]")
+mean(nontreatedminus5$ratings)
+
+nontreatedminus4 <- did_non %>% filter(days_since_gw_bin == "(-120,-90]")
+mean(nontreatedminus4$ratings)
+
+nontreatedminus3 <- did_non %>% filter(days_since_gw_bin == "(-90,-60]")
+mean(nontreatedminus3$ratings)
+
+nontreatedminus2 <- did_non %>% filter(days_since_gw_bin == "(-60,-30]")
+mean(nontreatedminus2$ratings)
+
+
+nontreatedminus1 <- did_non %>% filter(days_since_gw_bin == "(-30,0]")
+mean(nontreatedminus1$ratings)
+
+nontreatedplus1 <- did_non %>% filter(days_since_gw_bin == "(0,30]")
+mean(nontreatedplus1$ratings)
+
+nontreatedplus2 <- did_non %>% filter(days_since_gw_bin == "(30,60]")
+mean(nontreatedplus2$ratings)
+
+nontreatedplus3 <- did_non %>% filter(days_since_gw_bin == "(60,90]")
+mean(nontreatedplus3$ratings)
+
+
+nontreatedplus4 <- did_non %>% filter(days_since_gw_bin == "(90,120]")
+mean(nontreatedplus4$ratings)
+
+
+nontreatedplus5 <- did_non %>% filter(days_since_gw_bin == "(120,150]")
+mean(nontreatedplus5$ratings)
+
+nontreatedplus6 <- did_non %>% filter(days_since_gw_bin == "(150,180]")
+mean(nontreatedplus6$ratings)
+
+
+nontreatedplus7 <- did_non %>% filter(days_since_gw_bin == "(180,210]")
+mean(nontreatedplus7$ratings)
+
+
+nontreatedplus8 <- did_non %>% filter(days_since_gw_bin == "(210,240]")
+mean(nontreatedplus8$ratings)
+
+
+nontreatedplus9 <- did_non %>% filter(days_since_gw_bin == "(240,270]")
+mean(nontreatedplus9$ratings)
+
+nontreatedplus10 <- did_non %>% filter(days_since_gw_bin == "(270,300]")
+mean(nontreatedplus10$ratings)
+
+nontreatedplus11 <- did_non %>% filter(days_since_gw_bin == "(300,330]")
+mean(nontreatedplus11$ratings)
+
+nontreatedplus12 <- did_non %>% filter(days_since_gw_bin == "(330,360]")
+mean(nontreatedplus12$ratings)
+
+
+
