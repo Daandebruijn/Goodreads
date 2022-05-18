@@ -1,0 +1,26 @@
+DiD <- fread("DiDestimationsample.csv")
+names(DiD)
+DiD$month <- format(DiD$time, "%Y-%m")
+
+model4 <- feols(ratings ~ ratingaftergiveaway * treated | focal_book_id + month, DiD)
+summary(model4)
+gravity_subfe = list()
+all_FEs = c("focal_book_id", "month")
+for(i in 0:2){
+  gravity_subfe[[i+1]] = feols(ratings ~ ratingaftergiveaway * treated, DiD, fixef = all_FEs[0:i])
+}
+etable(gravity_subfe, cluster = ~focal_book_id)
+
+gravity_subfe = list()
+all_FEs = c("focal_book_id", "month")
+for(i in 0:2){
+  gravity_subfe[[i+1]] = feols(ratings ~ ratingaftergiveaway * treated * author_average_rating, DiD, fixef = all_FEs[0:i])
+}
+etable(gravity_subfe, cluster = ~focal_book_id)
+
+gravity_subfe = list()
+all_FEs = c("focal_book_id", "month")
+for(i in 0:2){
+  gravity_subfe[[i+1]] = feols(ratings ~ ratingaftergiveaway * treated * female_author, DiD, fixef = all_FEs[0:i])
+}
+etable(gravity_subfe, cluster = ~focal_book_id)
